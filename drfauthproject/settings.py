@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,9 +39,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-Party Apps
+    # Third-Party Apps'
+    'allauth',
+    'allauth.account',
     'rest_framework',
     'rest_framework.authtoken',
+    'django.contrib.sites',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
+    # Local Apps
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'drfauthproject.urls'
@@ -73,6 +83,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'drfauthproject.wsgi.application'
 
+REST_FRAMEWORK = {
+ 'DEFAULT_AUTHENTICATION_CLASSES': [
+ 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+ ],
+}
+
+SITE_ID = 1
+
+REST_USE_JWT = True
+
+JWT_AUTH_COOKIE = 'my-app-auth'
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),  # Change as needed
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),  # Change as needed
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -119,9 +150,36 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
+STATIC_ROOT = str(BASE_DIR.joinpath('staticfiles'))
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+LOGIN_URL = 'http://localhost:8000/users/login'
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_HOST_USER = 'mail_for_projects_neobis@mail.ru'
+EMAIL_HOST_PASSWORD = 'VuQngxzk2tXAwqF4muNL'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+
+
+DEFAULT_FROM_EMAIL = 'mail_for_projects_neobis@mail.ru'
