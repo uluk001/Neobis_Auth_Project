@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'drf_yasg',
 
     # Local Apps
     'users',
