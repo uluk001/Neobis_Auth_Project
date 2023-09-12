@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  auth:
+    container_name: auth
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - 8008:8000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth_db
+volumes:
+  postgres_data:
